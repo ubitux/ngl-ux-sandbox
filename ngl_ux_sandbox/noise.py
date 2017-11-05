@@ -138,6 +138,46 @@ def noise2d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
 
     return render
 
+@scene(ndim={'type': 'range', 'range': [0,8]},
+       c1={'type': 'color'}, c2={'type': 'color'},
+       lacunarity={'type': 'range', 'range': [0.01, 10], 'unit_base': 100},
+       gain={'type': 'range', 'range': [0.01, 10], 'unit_base': 100})
+def wood(cfg, ndim=4,
+         c1=(0.23, 0.17, 0.08, 1.0), c2=(0.47, 0.38, 0.27, 1.0),
+         lacunarity=2.0, gain=0.5):
+
+    random.seed(0)
+    random_dim = (1<<ndim) + 1
+
+    nb_gradients = random_dim**2
+
+    random_vals = _permuted_2d_gradients(nb_gradients)
+
+    random_data = array.array('f', random_vals)
+    random_buf = BufferVec2(data=random_data)
+    random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
+
+    quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
+    prog = Program(fragment=get_frag('noise'))
+
+    utime_animkf = [AnimKeyFrameFloat(0, 0),
+                    AnimKeyFrameFloat(cfg.duration, 1)]
+    utime = UniformFloat(anim=AnimatedFloat(utime_animkf))
+
+    render = Render(quad, prog)
+    render.update_textures(tex0=random_tex)
+    render.update_uniforms(dim=UniformInt(random_dim))
+    render.update_uniforms(nb_layers=UniformInt(1))
+    render.update_uniforms(time=utime)
+    render.update_uniforms(profile=UniformInt(4))
+    render.update_uniforms(lacunarity=UniformFloat(lacunarity))
+    render.update_uniforms(gain=UniformFloat(gain))
+    render.update_uniforms(c1=UniformVec4(c1))
+    render.update_uniforms(c2=UniformVec4(c2))
+
+    return render
+
+
 # uniform distribution of vectors of unit length 1
 def _get_rand(nb, nb_comp=2, pad=0):
     r = []
@@ -155,15 +195,26 @@ def _get_rand(nb, nb_comp=2, pad=0):
        lacunarity={'type': 'range', 'range': [0.01, 10], 'unit_base': 100},
        gain={'type': 'range', 'range': [0.01, 10], 'unit_base': 100})
 def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
-    cfg.duration = 5.
-
     random.seed(0)
-    random_dim = 1<<ndim
+    random_dim = (1<<ndim) + 1
 
-    nb_comp = 3
+    nb_gradients = random_dim**2
+
+    grad_set = (
+        ( 0, 1, 1), ( 0, 1,-1),
+        ( 0,-1, 1), ( 0,-1,-1),
+        ( 1, 0, 1), ( 1, 0,-1),
+        (-1, 0, 1), (-1, 0,-1),
+        ( 1, 1, 0), ( 1,-1, 0),
+        (-1, 1, 0), (-1,-1, 0),
+    )
 
     def get_rand():
-        return array.array('f', _get_rand(random_dim**2, nb_comp=3))
+        #return array.array('f', _get_rand(random_dim**2, nb_comp=3))
+        r = []
+        for i in range(nb_gradients):
+            r += random.choice(grad_set)
+        return array.array('f', r)
 
     random_buffer = BufferVec3(data=get_rand())
     random_tex = Texture2D(data_src=random_buffer, width=random_dim, height=random_dim)

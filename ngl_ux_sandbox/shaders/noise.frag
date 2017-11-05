@@ -9,6 +9,8 @@ uniform int dim;
 uniform int nb_layers;
 uniform int profile;
 uniform float time;
+uniform vec4 c1;
+uniform vec4 c2;
 
 uniform float gain;
 uniform float lacunarity;
@@ -163,9 +165,54 @@ float noise2d(vec2 pos)
 #endif
 }
 
+#if 0
+float pick3d(vec3 pos, vec3 grad_off)
+{
+    float d = float(dim) - 1.;
+    float s = 1.0 / d;
+
+    vec3 pi = floor(pos);
+    vec3 tex_pos = fract((pi + grad_off) * s);
+    vec3 uv = fract(pos) - grad_off;
+    vec3 grad = texture3D(tex0_sampler, tex_pos).xyz * 2.0 - 1.0;
+    return dot(grad, uv);
+}
+#endif
+
 float noise3d(vec3 pos)
 {
-    return 0.0;
+    float d = float(dim) - 1.;
+    float s = 1.0 / d;
+
+    pos *= d;
+
+    vec3 pf = fract(pos);
+
+    return pf.x;
+#if 0
+    float n000 = pick3d(pos, vec2(0.0, 0.0, 0.0));
+    float n100 = pick3d(pos, vec2(1.0, 0.0, 0.0));
+    float n010 = pick3d(pos, vec2(0.0, 1.0, 0.0));
+    float n110 = pick3d(pos, vec2(1.0, 1.0, 0.0));
+    float n001 = pick3d(pos, vec2(0.0, 0.0, 1.0));
+    float n101 = pick3d(pos, vec2(1.0, 0.0, 1.0));
+    float n011 = pick3d(pos, vec2(0.0, 1.0, 1.0));
+    float n111 = pick3d(pos, vec2(1.0, 1.0, 1.0));
+
+    vec2 uvw = f(pf);
+
+    float nx00 = mix(n000, n100, uvw.x);
+    float nx01 = mix(n001, n101, uvw.x);
+    float nx10 = mix(n010, n110, uvw.x);
+    float nx11 = mix(n011, n111, uvw.x);
+
+    float nxy0 = mix(nx00, nx10, uvw.y);
+    float nxy1 = mix(nx01, nx11, uvw.y);
+
+    float nxyz = mix(nxy0, nxy1, uvw.z);
+
+    return nxyz;
+#endif
 }
 
 void main(void)
@@ -190,7 +237,6 @@ void main(void)
         float c = step(n, var_tex0_coord.y);
         color = vec4(vec3(c), 1.0);
     } else if (profile == 2) { // noise 2d
-#if 1
         float sum = 0.0;
         float max_amp = 0.0;
         float freq = 1.0;
@@ -204,19 +250,17 @@ void main(void)
             amp *= gain;
         }
         float n = sum / max_amp;
-#else
-        float n = noise2d(var_tex0_coord);
-#endif
-#if 1
         color = vec4(vec3(n), 1.0);
-#else
-        vec4 c1 = vec4(0.0, 0.0, 0.0, 1.0);
-        vec4 c2 = vec4(1.0, 0.6, 0.7, 1.0);
-        color = mix(c1, c2, n);
-#endif
 
     } else if (profile == 3) { // noise 3d
         color = texture2D(tex0_sampler, var_tex0_coord);
+    } else if (profile == 4) { // wood
+        vec2 pos = var_tex0_coord/2.0 + vec2(time);
+        float n = noise2d(pos) * 10.;
+        n = n - floor(n);
+        color = mix(c1, c2, n);
+    } else { // debug
+        float n = noise2d(var_tex0_coord);
     }
 
     gl_FragColor = color;
