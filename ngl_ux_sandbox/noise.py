@@ -16,7 +16,9 @@ from pynodegl import (
         Quad,
         Render,
         Rotate,
+        Texture1D,
         Texture2D,
+        Texture3D,
         UniformFloat,
         UniformVec4,
         UniformInt,
@@ -39,10 +41,10 @@ def noise1d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
         return array.array('f', [random.uniform(0, 1) for x in range(random_dim)])
 
     random_buf = BufferFloat(data=get_rand())
-    random_tex = Texture2D(data_src=random_buf, width=random_dim, height=1)
+    random_tex = Texture1D(data_src=random_buf, width=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_frag('noise'))
+    prog = Program(fragment=get_frag('noise-common') + get_frag('noise1d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -53,7 +55,7 @@ def noise1d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     render.update_uniforms(dim=UniformInt(random_dim))
     render.update_uniforms(nb_layers=UniformInt(nb_layers))
     render.update_uniforms(time=utime)
-    render.update_uniforms(profile=UniformInt(1))
+    #render.update_uniforms(profile=UniformInt(1))
     render.update_uniforms(lacunarity=UniformFloat(lacunarity))
     render.update_uniforms(gain=UniformFloat(gain))
 
@@ -121,7 +123,7 @@ def noise2d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_frag('noise'))
+    prog = Program(fragment=get_frag('noise-common') + get_frag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -132,7 +134,7 @@ def noise2d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     render.update_uniforms(dim=UniformInt(random_dim))
     render.update_uniforms(nb_layers=UniformInt(nb_layers))
     render.update_uniforms(time=utime)
-    render.update_uniforms(profile=UniformInt(2))
+    render.update_uniforms(profile=UniformInt(0))
     render.update_uniforms(lacunarity=UniformFloat(lacunarity))
     render.update_uniforms(gain=UniformFloat(gain))
 
@@ -158,7 +160,7 @@ def wood(cfg, ndim=4,
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_frag('noise'))
+    prog = Program(fragment=get_frag('noise-common') + get_frag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -169,7 +171,7 @@ def wood(cfg, ndim=4,
     render.update_uniforms(dim=UniformInt(random_dim))
     render.update_uniforms(nb_layers=UniformInt(1))
     render.update_uniforms(time=utime)
-    render.update_uniforms(profile=UniformInt(4))
+    render.update_uniforms(profile=UniformInt(1))
     render.update_uniforms(lacunarity=UniformFloat(lacunarity))
     render.update_uniforms(gain=UniformFloat(gain))
     render.update_uniforms(c1=UniformVec4(c1))
@@ -220,7 +222,7 @@ def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture2D(data_src=random_buffer, width=random_dim, height=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_frag('noise'))
+    prog = Program(fragment=get_frag('noise-common') + get_frag('noise3d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration/2.0, 1),
@@ -232,7 +234,6 @@ def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     render.update_uniforms(dim=UniformInt(random_dim))
     render.update_uniforms(nb_layers=UniformInt(nb_layers))
     render.update_uniforms(time=utime)
-    render.update_uniforms(profile=UniformInt(3))
     render.update_uniforms(lacunarity=UniformFloat(lacunarity))
     render.update_uniforms(gain=UniformFloat(gain))
 
