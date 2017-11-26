@@ -8,6 +8,9 @@ def get_myshader(filename):
 def get_myfrag(name):
     return get_myshader(name + '.frag')
 
+def get_myvert(name):
+    return get_myshader(name + '.vert')
+
 vec_sub = lambda v1, v2: [a - b for a, b in zip(v1, v2)]
 vec_add = lambda v1, v2: [a + b for a, b in zip(v1, v2)]
 vec_mul = lambda v1, v2: [a * b for a, b in zip(v1, v2)]

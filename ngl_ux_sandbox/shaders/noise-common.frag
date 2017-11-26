@@ -1,6 +1,7 @@
-#version 100
+#version 130
 
-precision mediump float;
+//#version 100
+//precision mediump float;
 
 uniform int dim;
 uniform int nb_layers;

@@ -26,7 +26,7 @@ from pynodegl import (
 
 from pynodegl_utils.misc import scene
 
-from utils import get_myfrag
+from utils import get_myfrag, get_myvert
 
 
 @scene(ndim={'type': 'range', 'range': [1,8]},
@@ -44,7 +44,8 @@ def noise1d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture1D(data_src=random_buf, width=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise1d'))
+    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise1d'),
+                   vertex=get_myvert('noise'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]

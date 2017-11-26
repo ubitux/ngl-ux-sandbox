@@ -1,5 +1,5 @@
 uniform sampler1D tex0_sampler;
-varying float var_tex0_coord;
+varying vec2 var_tex0_coord;
 
 float pick1d(float pos, float off)
 {
