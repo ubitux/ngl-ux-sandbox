@@ -13,8 +13,9 @@ from pynodegl import (
         AnimatedFloat,
         AnimatedVec3,
         Camera,
-        GLState,
+        ConfigDepth,
         Geometry,
+        GraphicConfig,
         Group,
         Program,
         Render,
@@ -200,7 +201,7 @@ def godtree(cfg, variance_split=35, variance_cont=5,
     renders = _get_renders(tree_specs)
 
     node = Group(children=renders)
-    node.add_glstates(GLState(GL.GL_DEPTH_TEST, GL.GL_TRUE))
+    node = GraphicConfig(node, depth=ConfigDepth(GL.GL_TRUE))
     rot_animkf = [AnimKeyFrameFloat(0, 0),
                   AnimKeyFrameFloat(cfg.duration, 360*2)]
     node = Rotate(node, axis=(0,1,0), anim=AnimatedFloat(rot_animkf))
