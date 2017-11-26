@@ -24,9 +24,9 @@ from pynodegl import (
         UniformInt,
 )
 
-from pynodegl_utils.misc import scene, get_shader
+from pynodegl_utils.misc import scene
 
-from utils import get_frag
+from utils import get_myfrag
 
 
 @scene(ndim={'type': 'range', 'range': [1,8]},
@@ -44,7 +44,7 @@ def noise1d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture1D(data_src=random_buf, width=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_frag('noise-common') + get_frag('noise1d'))
+    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise1d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -76,7 +76,7 @@ def segment_debug(cfg, ndim=2):
 
     #quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0)) # origin in bottom left
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_frag('segment'))
+    prog = Program(fragment=get_myfrag('segment'))
     render = Render(quad, prog)
     render.update_textures(tex0=c_tex)
     render.update_uniforms(dim=UniformInt(dim))
@@ -123,7 +123,7 @@ def noise2d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_frag('noise-common') + get_frag('noise2d'))
+    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -160,7 +160,7 @@ def wood(cfg, ndim=4,
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_frag('noise-common') + get_frag('noise2d'))
+    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -222,7 +222,7 @@ def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture2D(data_src=random_buffer, width=random_dim, height=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_frag('noise-common') + get_frag('noise3d'))
+    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise3d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration/2.0, 1),

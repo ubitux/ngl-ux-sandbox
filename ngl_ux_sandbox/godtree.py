@@ -27,7 +27,7 @@ from pynodegl import (
 )
 
 from utils import (
-        get_frag,
+        get_myfrag,
         vec_add,
         vec3_rot,
         vec3_normal,
@@ -135,11 +135,11 @@ def godtree(cfg, variance_split=35, variance_cont=5,
                          birth_step, max_w, twist*pi/2.)
 
     if debug_color:
-        fragment = get_frag('godtree-dbgcolor')
+        fragment = get_myfrag('godtree-dbgcolor')
     else:
         ugreen = UniformVec4(green)
         ubrown = UniformVec4(brown)
-        fragment = get_frag('godtree')
+        fragment = get_myfrag('godtree')
 
     program = Program(fragment=fragment)
 

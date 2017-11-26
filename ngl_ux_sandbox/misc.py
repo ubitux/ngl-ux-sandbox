@@ -15,7 +15,7 @@ from pynodegl import (
         UniformVec4,
 )
 
-from pynodegl_utils.misc import scene, get_shader
+from pynodegl_utils.misc import scene, get_frag
 
 @scene(n={'type': 'range', 'range': [1,100000]},
        gauss={'type': 'bool'})
@@ -25,7 +25,7 @@ def sphere(cfg, n=4000, gauss=True):
     cfg.duration = 15.
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_shader('color'))
+    prog = Program(fragment=get_frag('color'))
 
     scale = 1.3
     r = []

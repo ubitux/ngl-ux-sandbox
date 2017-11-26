@@ -1,12 +1,12 @@
 import os
 from math import cos, sin, sqrt
 
-def get_shader(filename):
+def get_myshader(filename):
     shader_path = os.path.join(os.path.dirname(__file__), 'shaders')
     return open(os.path.join(shader_path, filename)).read()
 
-def get_frag(name):
-    return get_shader(name + '.frag')
+def get_myfrag(name):
+    return get_myshader(name + '.frag')
 
 vec_sub = lambda v1, v2: [a - b for a, b in zip(v1, v2)]
 vec_add = lambda v1, v2: [a + b for a, b in zip(v1, v2)]
