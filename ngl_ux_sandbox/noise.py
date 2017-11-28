@@ -16,7 +16,6 @@ from pynodegl import (
         Quad,
         Render,
         Rotate,
-        Texture1D,
         Texture2D,
         Texture3D,
         UniformFloat,
@@ -37,15 +36,20 @@ def noise1d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random.seed(0)
     random_dim = 1<<ndim
 
+    shader_header = '#version 100\nprecision highp float;\n'
+
     def get_rand():
         return array.array('f', [random.uniform(0, 1) for x in range(random_dim)])
 
     random_buf = BufferFloat(data=get_rand())
-    random_tex = Texture1D(data_src=random_buf, width=random_dim)
+    random_tex = Texture2D(data_src=random_buf, width=random_dim, height=1)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise1d'),
-                   vertex=get_myvert('noise'))
+    prog = Program(fragment=shader_header
+                           + get_myfrag('noise-common')
+                           + get_myfrag('noise1d'),
+                   vertex=shader_header
+                         + get_myvert('noise'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -96,11 +100,6 @@ def _permuted_2d_gradients(n, pad=0, r=1.0):
         grad += [0] * pad
     return grad
 
-def _permuted_1d_gradients(n):
-    v = [x/float(n) for x in range(n)]
-    random.shuffle(v)
-    return v
-
 @scene(ndim={'type': 'range', 'range': [0,8]},
        nb_layers={'type': 'range', 'range': [1,8]},
        lacunarity={'type': 'range', 'range': [0.01, 10], 'unit_base': 100},
@@ -109,22 +108,22 @@ def noise2d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random.seed(0)
     random_dim = (1<<ndim) + 1
 
+    shader_header = '#version 100\nprecision highp float;\n'
+
     nb_gradients = random_dim**2
     #print 'nb_gradients', nb_gradients
     #print 'dim', random_dim
 
     random_vals = _permuted_2d_gradients(nb_gradients)
-    #random_vals_1d = _permuted_1d_gradients(nb_gradients)
-    #random_vals = []
-    #for v in zip(random_vals_1d, random_vals_1d):
-    #    random_vals += v
 
     random_data = array.array('f', random_vals)
     random_buf = BufferVec2(data=random_data)
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise2d'))
+    prog = Program(fragment=shader_header
+                           + get_myfrag('noise-common')
+                           + get_myfrag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -152,6 +151,8 @@ def wood(cfg, ndim=4,
     random.seed(0)
     random_dim = (1<<ndim) + 1
 
+    shader_header = '#version 100\nprecision highp float;\n'
+
     nb_gradients = random_dim**2
 
     random_vals = _permuted_2d_gradients(nb_gradients)
@@ -161,7 +162,9 @@ def wood(cfg, ndim=4,
     random_tex = Texture2D(data_src=random_buf, width=random_dim, height=random_dim)
 
     quad = Quad((-1, 1, 0), (2, 0, 0), (0, -2, 0))
-    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise2d'))
+    prog = Program(fragment=shader_header
+                           + get_myfrag('noise-common')
+                           + get_myfrag('noise2d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration, 1)]
@@ -197,9 +200,12 @@ def _get_rand(nb, nb_comp=2, pad=0):
        nb_layers={'type': 'range', 'range': [1,8]},
        lacunarity={'type': 'range', 'range': [0.01, 10], 'unit_base': 100},
        gain={'type': 'range', 'range': [0.01, 10], 'unit_base': 100})
-def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
+def noise3d(cfg, ndim=4, nb_layers=1, lacunarity=2.0, gain=0.5):
     random.seed(0)
     random_dim = (1<<ndim) + 1
+
+    #shader_header = '#version 100\nprecision highp float;\n'
+    shader_header = '#version 130\n' if cfg.glbackend != 'gles' else '#version 310 es\n'
 
     nb_gradients = random_dim**2
 
@@ -223,7 +229,11 @@ def noise3d(cfg, ndim=4, nb_layers=6, lacunarity=2.0, gain=0.5):
     random_tex = Texture2D(data_src=random_buffer, width=random_dim, height=random_dim)
 
     quad = Quad((-1, -1, 0), (2, 0, 0), (0, 2, 0))
-    prog = Program(fragment=get_myfrag('noise-common') + get_myfrag('noise3d'))
+    prog = Program(fragment=shader_header
+                           + get_myfrag('noise-common')
+                           + get_myfrag('noise3d'),
+                   vertex=shader_header
+                         + get_myvert('noise3d'))
 
     utime_animkf = [AnimKeyFrameFloat(0, 0),
                     AnimKeyFrameFloat(cfg.duration/2.0, 1),

@@ -1,8 +1,3 @@
-#version 130
-
-//#version 100
-//precision mediump float;
-
 uniform int dim;
 uniform int nb_layers;
 uniform int profile;

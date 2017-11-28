@@ -1,7 +1,8 @@
 uniform sampler3D tex0_sampler;
 varying vec2 var_tex0_coord;
+uniform vec3 tex0_dimensions;
 
-#if 0
+#if 1
 float pick3d(vec3 pos, vec3 grad_off)
 {
     float d = float(dim) - 1.;
@@ -24,18 +25,19 @@ float noise3d(vec3 pos)
 
     vec3 pf = fract(pos);
 
-    return pf.x;
 #if 0
-    float n000 = pick3d(pos, vec2(0.0, 0.0, 0.0));
-    float n100 = pick3d(pos, vec2(1.0, 0.0, 0.0));
-    float n010 = pick3d(pos, vec2(0.0, 1.0, 0.0));
-    float n110 = pick3d(pos, vec2(1.0, 1.0, 0.0));
-    float n001 = pick3d(pos, vec2(0.0, 0.0, 1.0));
-    float n101 = pick3d(pos, vec2(1.0, 0.0, 1.0));
-    float n011 = pick3d(pos, vec2(0.0, 1.0, 1.0));
-    float n111 = pick3d(pos, vec2(1.0, 1.0, 1.0));
+    return pf.x;
+#else
+    float n000 = pick3d(pos, vec3(0.0, 0.0, 0.0));
+    float n100 = pick3d(pos, vec3(1.0, 0.0, 0.0));
+    float n010 = pick3d(pos, vec3(0.0, 1.0, 0.0));
+    float n110 = pick3d(pos, vec3(1.0, 1.0, 0.0));
+    float n001 = pick3d(pos, vec3(0.0, 0.0, 1.0));
+    float n101 = pick3d(pos, vec3(1.0, 0.0, 1.0));
+    float n011 = pick3d(pos, vec3(0.0, 1.0, 1.0));
+    float n111 = pick3d(pos, vec3(1.0, 1.0, 1.0));
 
-    vec2 uvw = f(pf);
+    vec3 uvw = f(pf);
 
     float nx00 = mix(n000, n100, uvw.x);
     float nx01 = mix(n001, n101, uvw.x);

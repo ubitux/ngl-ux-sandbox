@@ -1,6 +1,3 @@
-#version 130
-
-precision highp float;
 attribute vec4 ngl_position;
 attribute vec2 ngl_uvcoord;
 attribute vec3 ngl_normal;

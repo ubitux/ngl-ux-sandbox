@@ -1,10 +1,10 @@
-uniform sampler1D tex0_sampler;
+uniform sampler2D tex0_sampler;
 varying vec2 var_tex0_coord;
 
 float pick1d(float pos, float off)
 {
     float value_point = fract(pos + off);
-    float value = texture1D(tex0_sampler, value_point).x;
+    float value = texture2D(tex0_sampler, vec2(value_point, 0)).x;
     return value;
 }
 
@@ -38,7 +38,8 @@ void main(void)
         amp *= gain;
     }
     float n = sum / max_amp;
-    float c = step(n, var_tex0_coord.y);
+    float c = step(var_tex0_coord.y, n);
+    //float c = smoothstep(n, var_tex0_coord.y, .5);
     vec4 color = vec4(vec3(c), 1.0);
 
     gl_FragColor = color;
